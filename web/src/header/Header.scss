@@ -19,8 +19,15 @@
     text-align: right;
     margin: 0.8rem 0.5rem;
 
-    a {
+    button {
+      border: none;
+      background: transparent;
       color: #aaa;
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0;
+      outline: none;
     }
   }
 }

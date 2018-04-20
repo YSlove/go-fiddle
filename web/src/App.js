@@ -4,8 +4,9 @@ import React, { Component } from 'react';
 import Header from './header/Header';
 import MessageDetails from './messages/MessageDetails';
 import MessageList from './messages/MessagesList';
+import SettingsPanel from './settings/SettingsPanel';
 import Sockette from 'sockette';
-import StatusPanel from './StatusPanel';
+import StatusPanel from './common/StatusPanel';
 import config from './config';
 import fetch from 'isomorphic-fetch';
 
@@ -17,12 +18,15 @@ class App extends Component {
       messages: [],
       selectedMessageId: null,
       selectedMessage: null,
+      showSettings: false,
     };
 
     this.handleMessageSelect = this.handleMessageSelect.bind(this);
     this.handleData = this.handleData.bind(this);
     this.handleError = this.handleError.bind(this);
     this.handleStatusClose = this.handleStatusClose.bind(this);
+    this.handleHeader = this.handleHeader.bind(this);
+    this.handleSettingsClose = this.handleSettingsClose.bind(this);
   }
 
   componentDidMount() {
@@ -92,10 +96,20 @@ class App extends Component {
     this.setState({messages});
   }
 
+  handleHeader(tool) {
+    if (tool === 'settings') {
+      this.setState({ showSettings: true });
+    }
+  }
+
+  handleSettingsClose() {
+    this.setState({ showSettings: false });
+  }
+
   render() {
     return (
       <div className="App">
-        <Header />
+        <Header onSelect={this.handleHeader} />
         <div className="container">
           <div className="list-panel">
             <MessageList messages={this.state.messages} activeMessageId={this.state.selectedMessageId} onSelect={this.handleMessageSelect} />
@@ -104,6 +118,10 @@ class App extends Component {
             <MessageDetails message={this.state.selectedMessage} />
           </div>
         </div>
+        { this.state.showSettings ?
+          <SettingsPanel onClose={this.handleSettingsClose} /> :
+          null
+        }
         { this.state.status ?
           <StatusPanel type={this.state.status.type} onDismiss={this.handleStatusClose}>{this.state.status.message}</StatusPanel> :
           null

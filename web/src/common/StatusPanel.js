@@ -1,6 +1,7 @@
 import './StatusPanel.css';
 
 import React, { Component } from 'react';
+import CloseButton from './CloseButton';
 
 class StatusPanel extends Component {
   constructor(props) {
@@ -19,11 +20,7 @@ class StatusPanel extends Component {
     const { type } = this.props;
     return (
       <div className={['StatusPanel', type].join(' ')}>
-        <button className="close" onClick={this.handleHide}>
-          <svg width={20} height={20}>
-            <path className="path" fill="none" strokeWidth={2} d="M4,4 L16,16 M4,16 L16,4" />
-          </svg>
-        </button>
+        <CloseButton className="close" onClick={this.handleHide} />
         <div className="content">
           {this.props.children}
         </div>

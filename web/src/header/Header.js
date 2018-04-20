@@ -1,6 +1,5 @@
 import './Header.css';
 import React, { Component } from 'react';
-import config from '../config';
 
 class Header extends Component {
   constructor(props) {
@@ -10,12 +9,12 @@ class Header extends Component {
       showCertificatesPanel: false,
     };
 
-    this.handleSelect = this.handleSelect.bind(this);
+    this.handleSettings = this.handleSettings.bind(this);
   }
 
-  handleSelect(message) {
+  handleSettings() {
     if (this.props.onSelect) {
-      this.props.onSelect(message);
+      this.props.onSelect('settings');
     }
   }
 
@@ -24,7 +23,8 @@ class Header extends Component {
       <div className="Header">
         <div className="brand">GoFiddle</div>
         <div className="tools">
-          <a href={`${config.restApi}certificate`}>Download certificate</a>
+          <button onClick={this.handleSettings}>Settings</button>
+          {/* <a href={`${config.restApi}certificate`}>Download certificate</a> */}
         </div>
       </div>
     );
