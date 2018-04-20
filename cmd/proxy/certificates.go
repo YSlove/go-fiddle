@@ -32,25 +32,25 @@ func initializeCA(certificateFile string, privateKeyFile string) (*tls.Certifica
 	return &ca, nil
 }
 
-func configureCA() {
+func configureCA() bool {
 	var err error
 	certificateFile := config.Get("CERTIFICATE_FILE", "../../certificates/proxy-ca.pem")
 	privateKeyFile := config.Get("PRIVATE_KEY_FILE", "../../certificates/proxy-ca.key")
 
 	if _, err := os.Stat(certificateFile); os.IsNotExist(err) {
 		log.Printf("Certificate file not found, bypassing CA configuration. File: %s", certificateFile)
-		return
+		return false
 	}
 
 	if _, err := os.Stat(privateKeyFile); os.IsNotExist(err) {
 		log.Printf("Private key file not found, bypassing CA configuration. File: %s", privateKeyFile)
-		return
+		return false
 	}
 
 	goproxyCa, err := initializeCA(certificateFile, privateKeyFile)
 	if goproxyCa.Leaf, err = x509.ParseCertificate(goproxyCa.Certificate[0]); err != nil {
 		log.Printf("Error loading certificate, bypassing CA configuration. Error: %s", err)
-		return
+		return false
 	}
 
 	goproxy.GoproxyCa = *goproxyCa
@@ -58,4 +58,6 @@ func configureCA() {
 	goproxy.MitmConnect = &goproxy.ConnectAction{Action: goproxy.ConnectMitm, TLSConfig: goproxy.TLSConfigFromCA(goproxyCa)}
 	goproxy.HTTPMitmConnect = &goproxy.ConnectAction{Action: goproxy.ConnectHTTPMitm, TLSConfig: goproxy.TLSConfigFromCA(goproxyCa)}
 	goproxy.RejectConnect = &goproxy.ConnectAction{Action: goproxy.ConnectReject, TLSConfig: goproxy.TLSConfigFromCA(goproxyCa)}
+
+	return true
 }

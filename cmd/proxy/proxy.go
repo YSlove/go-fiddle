@@ -22,7 +22,7 @@ import (
 )
 
 func main() {
-	configureCA()
+	caConfigured := configureCA()
 	proxy := goproxy.NewProxyHttpServer()
 	kafkaProducer := kafkaserver.NewProducer()
 	requestMap := make(map[*http.Request]string)
@@ -32,8 +32,10 @@ func main() {
 	// session.SetMode(mgo.Monotonic, true)
 	collection := database.GetDatabaseCollection(session, "messages")
 
-	proxy.OnRequest(goproxy.ReqHostMatches(regexp.MustCompile("^.*$"))).
-		HandleConnect(goproxy.AlwaysMitm)
+	if caConfigured {
+		proxy.OnRequest(goproxy.ReqHostMatches(regexp.MustCompile("^.*$"))).
+			HandleConnect(goproxy.AlwaysMitm)
+	}
 
 	proxy.OnRequest(shouldInterceptRequest()).DoFunc(
 		func(r *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *http.Response) {
