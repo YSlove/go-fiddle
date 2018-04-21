@@ -13,7 +13,7 @@ class CertificatesPanel extends Component {
     };
   }
 
-  async componentWillMount() {
+  async componentDidMount() {
     try {
       const resp = await fetch(certificateUrl);
       if (resp.status === 200) {
