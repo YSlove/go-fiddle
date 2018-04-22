@@ -1,0 +1,14 @@
+.CloseButton {
+  background: none;
+  padding: 0.3rem;
+  cursor: pointer;
+  border: none;
+
+  &:focus {
+    outline: none;
+  }
+
+  .path {
+    stroke: #000;
+  }
+}
