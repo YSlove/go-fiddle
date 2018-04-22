@@ -1,4 +1,4 @@
-import './App.css';
+import './App.scss';
 
 import * as fetch from 'isomorphic-fetch';
 import * as React from 'react';

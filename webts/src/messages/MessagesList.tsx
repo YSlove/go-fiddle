@@ -1,4 +1,4 @@
-import './Messages.css';
+import './Messages.scss';
 
 import * as React from 'react';
 import { MessageSummary } from '../models/Message';

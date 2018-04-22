@@ -1,4 +1,4 @@
-import './Expander.css';
+import './Expander.scss';
 
 import * as React from 'react';
 

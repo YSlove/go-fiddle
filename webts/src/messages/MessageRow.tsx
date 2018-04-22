@@ -1,4 +1,4 @@
-import './Messages.css';
+import './Messages.scss';
 
 import * as moment from 'moment';
 import * as React from 'react';

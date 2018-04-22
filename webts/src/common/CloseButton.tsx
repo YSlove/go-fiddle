@@ -1,4 +1,4 @@
-import './CloseButton.css';
+import './CloseButton.scss';
 
 import * as React from 'react';
 

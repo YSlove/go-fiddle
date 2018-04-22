@@ -1,4 +1,4 @@
-import './StatusPanel.css';
+import './StatusPanel.scss';
 
 import * as React from 'react';
 import CloseButton from './CloseButton';

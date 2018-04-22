@@ -1,4 +1,4 @@
-import './Settings.css';
+import './Settings.scss';
 
 import * as React from 'react';
 import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';

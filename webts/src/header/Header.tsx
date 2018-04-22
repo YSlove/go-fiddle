@@ -1,4 +1,4 @@
-import './Header.css';
+import './Header.scss';
 
 import * as React from 'react';
 
