@@ -29,7 +29,6 @@ class CertificatesPanel extends React.Component<any, any> {
 
   public render() {
     let content: string = require(this.state.hasCertificate ? './certificate-installed.md' : './certificate-not-installed.md');
-    console.log(content);
     content = replace(content, { certificateUrl });
     return (
       <div style={{ display: this.state.ready ? 'block' : 'none' }} dangerouslySetInnerHTML={{ __html: content }} />
