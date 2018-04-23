@@ -6,6 +6,10 @@ The primary differentiator between GO Fiddle and Fiddler is that GO Fiddle is in
 
 GO Fiddle should not be used in production environments.
 
+## Overview
+
+![Overview](docs/GoFiddle.svg)
+
 ## Getting started
 
 Dependencies:
