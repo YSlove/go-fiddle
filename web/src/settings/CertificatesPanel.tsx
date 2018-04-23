@@ -1,6 +1,7 @@
 import * as fetch from 'isomorphic-fetch';
 import * as React from 'react';
 import config from '../config';
+import replace from '../util/replace';
 
 const certificateUrl = `${config.restApi}certificate`;
 
@@ -27,18 +28,11 @@ class CertificatesPanel extends React.Component<any, any> {
   }
 
   public render() {
+    let content: string = require(this.state.hasCertificate ? './certificate-installed.md' : './certificate-not-installed.md');
+    console.log(content);
+    content = replace(content, { certificateUrl });
     return (
-      <div style={{ display: this.state.ready ? 'block' : 'none' }}>
-        <h2>Certificate Details</h2>
-        { this.state.hasCertificate ?
-          <div>
-            <p>Certificates are configured and can be <a href={certificateUrl}>downloaded</a> and installed.</p>
-            <h3>Installation Instructions</h3>
-            <p>Install certificates by... TODO</p>
-          </div> :
-          <p>Certificates are not currently configured and https requests will not be captured.</p>
-        }
-      </div>
+      <div style={{ display: this.state.ready ? 'block' : 'none' }} dangerouslySetInnerHTML={{ __html: content }} />
     );
   }
 }

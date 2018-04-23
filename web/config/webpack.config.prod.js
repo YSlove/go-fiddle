@@ -154,6 +154,14 @@ module.exports = {
               compact: true,
             },
           },
+          {
+            test: /\.md$/,
+            use: [{
+              loader: "html-loader",
+            }, {
+              loader: "markdown-loader",
+            }]
+          },
           // Compile .tsx?
           {
             test: /\.(ts|tsx)$/,
