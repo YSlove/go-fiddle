@@ -1,17 +1,17 @@
 import CertificateRoutes from './routes/certificate';
 import MessagesRoutes from './routes/messages';
-import WebSocket from 'ws';
+import * as WebSocket from 'ws';
 import config from './config';
 import kafka from './kafka';
-import restify from 'restify';
+import * as restify from 'restify';
 
 export async function createServer() {
   const server = restify.createServer({});
   const wss = new WebSocket.Server({ server: server.server });
-  const sockets = [];
+  const sockets: WebSocket[] = [];
 
-  const messageHandler = function messageHandler(messages, topic, partition) {
-    messages.forEach((m) => {
+  const messageHandler = async function messageHandler(messages: any, topic: string, partition: number) {
+    messages.forEach((m: any) => {
       sockets.forEach(ws => {
         ws.send(m.message.value.toString('utf8'));
       });

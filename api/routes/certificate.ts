@@ -1,8 +1,9 @@
 import * as fs from 'fs';
 import config from '../config';
 import { wrap } from 'async-middleware';
+import * as restify from 'restify';
 
-async function getCertificateHandler(req, res, next) {
+async function getCertificateHandler(req: restify.Request, res: restify.Response, next: restify.Next) {
   if (!fs.existsSync(config.CERTIFICATE_FILE)) {
     res.send(404, { message: 'Certificate not configured' });
     next();
@@ -21,7 +22,7 @@ async function getCertificateHandler(req, res, next) {
   next();
 }
 
-export function register(server) {
+export function register(server: restify.Server) {
   server.get('/certificate', wrap(getCertificateHandler));
 }
 

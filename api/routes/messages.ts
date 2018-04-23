@@ -1,7 +1,8 @@
 import config from '../config';
-import mongodb from 'mongodb';
+import * as mongodb from 'mongodb';
+import * as restify from 'restify';
 
-function getHeaderValue(headers, name, defaultValue) {
+function getHeaderValue(headers: Array<{ name: string, value: string}>, name: string, defaultValue?: string) {
   const header = headers.filter(h => new RegExp(`^${name}$`, 'i').test(h.name))[0];
   if (header) {
     return header.value;
@@ -9,7 +10,7 @@ function getHeaderValue(headers, name, defaultValue) {
   return defaultValue;
 }
 
-function getUri(uri, headers) {
+function getUri(uri: string, headers: Array<{ name: string, value: string}>) {
   if (/^https?:\/\//g.test(uri)) {
     return uri;
   }
@@ -27,7 +28,7 @@ const database = (async () => {
   return db;
 })();
 
-async function getMessagesHandler(req, res, next) {
+async function getMessagesHandler(req: restify.Request, res: restify.Response, next: restify.Next) {
   const db = await database;
   const messages = (
     await db.collection('messages')
@@ -53,7 +54,7 @@ async function getMessagesHandler(req, res, next) {
   next();
 }
 
-async function getMessageDetailsHandler(req, res, next) {
+async function getMessageDetailsHandler(req: restify.Request, res: restify.Response, next: restify.Next) {
   const db = await database;
   const message = (await db.collection('messages')
     .find({
@@ -75,14 +76,14 @@ async function getMessageDetailsHandler(req, res, next) {
   next();
 }
 
-function decodeBody(payload) {
+function decodeBody(payload: any) {
   if (payload) {
     return Object.assign({}, payload, { body: payload.body.toString('utf8'), body64: payload.body.toString('base64') });
   }
   return payload;
 }
 
-export function register(server) {
+export function register(server: restify.Server) {
   server.get('/messages', getMessagesHandler);
   server.get('/messages/:id', getMessageDetailsHandler);
 }
