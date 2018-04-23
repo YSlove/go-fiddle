@@ -2,6 +2,10 @@
 
 Golang implementation of a HTTP proxy inspired by Fiddler.
 
+The primary differentiator between GO Fiddle and Fiddler is that GO Fiddle is intended for use in distributed systems. GO Fiddle can help with debugging and troubleshooting when all HTTP/HTTPS traffic is configured to use the proxy.
+
+GO Fiddle should not be used in production environments.
+
 ## Getting started
 
 Dependencies:
@@ -9,6 +13,7 @@ Dependencies:
 * `golang`
 * `kafka`
 * `mongodb`
+* `nodejs`
 
 Alternatively:
 
