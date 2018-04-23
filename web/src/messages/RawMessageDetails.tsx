@@ -4,7 +4,7 @@ import Expander from '../expander/Expander';
 import { MessageDetails } from '../models/Message';
 
 interface Props {
-  message: MessageDetails;
+  message?: MessageDetails;
 }
 
 class RawMessageDetails extends React.Component<Props> {

@@ -8,17 +8,26 @@ import config from './config';
 import Header from './header/Header';
 import MessageDetails from './messages/MessageDetails';
 import MessageList from './messages/MessagesList';
-import { MessageSummary } from './models/Message';
+import * as models from './models/Message';
 import SettingsPanel from './settings/SettingsPanel';
 
-class App extends React.Component<any, any> {
+interface State {
+  messages: models.MessageSummary[];
+  selectedMessage?: models.MessageDetails;
+  selectedMessageId?: string;
+  showSettings: boolean;
+  status?: {
+    message: string,
+    type: string,
+  };
+}
+
+class App extends React.Component<any, State> {
   constructor(props: any) {
     super(props);
 
     this.state = {
       messages: [],
-      selectedMessage: null,
-      selectedMessageId: null,
       showSettings: false,
     };
 
@@ -62,13 +71,13 @@ class App extends React.Component<any, any> {
 
   private handleStatusClose() {
     this.setState({
-      status: null,
+      status: undefined,
     });
   }
 
-  private async handleMessageSelect(message: MessageSummary) {
+  private async handleMessageSelect(message: models.MessageSummary) {
     this.setState({
-      selectedMessage: null,
+      selectedMessage: undefined,
       selectedMessageId: message.id,
     });
 
@@ -87,7 +96,7 @@ class App extends React.Component<any, any> {
   private handleData(e: any) {
     const data = JSON.parse(e.data);
     const messages = this.state.messages.slice();
-    const index = messages.findIndex((m: MessageSummary) => m.id === data.id);
+    const index = messages.findIndex(m => m.id === data.id);
 
     if (index === -1) {
       messages.push(data);

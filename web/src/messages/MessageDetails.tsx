@@ -53,7 +53,7 @@ function getHeaderValue(headers: MessageHeader[], name: string) {
 }
 
 interface Props {
-  message: MessageDetails;
+  message?: MessageDetails;
 }
 
 class MessagesDetails extends React.Component<Props> {

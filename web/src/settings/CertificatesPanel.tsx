@@ -5,7 +5,12 @@ import replace from '../util/replace';
 
 const certificateUrl = `${config.restApi}certificate`;
 
-class CertificatesPanel extends React.Component<any, any> {
+interface State {
+  hasCertificate: boolean;
+  ready: boolean;
+}
+
+class CertificatesPanel extends React.Component<any, State> {
   constructor(props: any) {
     super(props);
     this.state = {
