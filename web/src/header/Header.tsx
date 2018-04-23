@@ -6,17 +6,9 @@ interface Props {
   onSelect?: (tool: string) => void;
 }
 
-interface State {
-  showCertificatesPanel: boolean;
-}
-
-class Header extends React.Component<Props, State> {
+class Header extends React.Component<Props> {
   constructor(props: Props) {
     super(props);
-
-    this.state = {
-      showCertificatesPanel: false,
-    };
 
     this.handleSettings = this.handleSettings.bind(this);
   }
