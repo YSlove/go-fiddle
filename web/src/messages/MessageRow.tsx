@@ -3,6 +3,8 @@ import './Messages.scss';
 import * as moment from 'moment';
 import * as React from 'react';
 import { MessageSummary } from '../models/Message';
+import HighlightableText from '../search/HighlightableText';
+import SearchContext from '../search/SearchContext';
 
 interface Props {
   active: boolean;
@@ -36,29 +38,33 @@ class MessagesRow extends React.Component<Props> {
     }
   }
 
-  public componentDidMount() {
-    if (this.props.active) {
-      this.rowElement.focus();
-    }
-  }
+  // public componentDidMount() {
+  //   if (this.props.active) {
+  //     this.rowElement.focus();
+  //   }
+  // }
 
-  public componentDidUpdate() {
-    if (this.props.active) {
-      this.rowElement.focus();
-    }
-  }
+  // public componentDidUpdate() {
+  //   if (this.props.active) {
+  //     this.rowElement.focus();
+  //   }
+  // }
 
   public render() {
     const { message, active } = this.props;
     const { timestamp, method, uri, statuscode } = message;
 
     return (
-      <tr ref={(e) => this.rowElement = e} tabIndex={0} className={active ? 'active' : ''} onClick={this.handleClick} onKeyDown={this.handleKeyDown}>
-        <td className="col-time">{moment(timestamp / 1000000).format('HH:mm:ss')}</td>
-        <td className="col-method">{method}</td>
-        <td className="col-uri" title={uri}>{uri}</td>
-        <td className="col-status">{statuscode || '-'}</td>
-      </tr>
+      <SearchContext.Consumer>
+        {({expression}) => (
+          <tr ref={(e) => this.rowElement = e} tabIndex={0} className={active ? 'active' : ''} onClick={this.handleClick} onKeyDown={this.handleKeyDown}>
+            <td className="col-time">{moment(timestamp / 1000000).format('HH:mm:ss')}</td>
+            <td className="col-method"><HighlightableText text={method} expression={expression} /></td>
+            <td className="col-uri" title={uri}><HighlightableText text={uri} expression={expression} /></td>
+            <td className="col-status"><HighlightableText text={(statuscode || '-').toString()} expression={expression} /></td>
+          </tr>
+        )}
+      </SearchContext.Consumer>
     );
   }
 }

@@ -9,6 +9,7 @@ import Header from './header/Header';
 import MessageDetails from './messages/MessageDetails';
 import MessageList from './messages/MessagesList';
 import * as models from './models/Message';
+import SearchContext from './search/SearchContext';
 import SettingsPanel from './settings/SettingsPanel';
 
 interface State {
@@ -20,6 +21,7 @@ interface State {
     message: string,
     type: string,
   };
+  search: string;
 }
 
 class App extends React.Component<any, State> {
@@ -28,6 +30,7 @@ class App extends React.Component<any, State> {
 
     this.state = {
       messages: [],
+      search: '',
       showSettings: false,
     };
 
@@ -35,6 +38,7 @@ class App extends React.Component<any, State> {
     this.handleMessageDelete = this.handleMessageDelete.bind(this);
     this.handleData = this.handleData.bind(this);
     this.handleError = this.handleError.bind(this);
+    this.handleSearch = this.handleSearch.bind(this);
     this.handleStatusClose = this.handleStatusClose.bind(this);
     this.handleHeader = this.handleHeader.bind(this);
     this.handleSettingsClose = this.handleSettingsClose.bind(this);
@@ -68,6 +72,10 @@ class App extends React.Component<any, State> {
         type: 'error',
       },
     });
+  }
+
+  private handleSearch(search: string) {
+    this.setState({ search });
   }
 
   private handleStatusClose() {
@@ -129,30 +137,32 @@ class App extends React.Component<any, State> {
 
   public render() {
     return (
-      <div className="App">
-        <Header onSelect={this.handleHeader} />
-        <div className="container">
-          <div className="list-panel">
-            <MessageList
-              messages={this.state.messages}
-              activeMessageId={this.state.selectedMessageId}
-              onSelect={this.handleMessageSelect}
-              onDelete={this.handleMessageDelete}
-            />
+      <SearchContext.Provider value={{ expression: this.state.search }}>
+        <div className="App">
+          <Header search={this.state.search} onSelect={this.handleHeader} onSearch={this.handleSearch} />
+          <div className="container">
+            <div className="list-panel">
+              <MessageList
+                messages={this.state.messages}
+                activeMessageId={this.state.selectedMessageId}
+                onSelect={this.handleMessageSelect}
+                onDelete={this.handleMessageDelete}
+              />
+            </div>
+            <div className="details-panel">
+              <MessageDetails message={this.state.selectedMessage} />
+            </div>
           </div>
-          <div className="details-panel">
-            <MessageDetails message={this.state.selectedMessage} />
-          </div>
+          { this.state.showSettings ?
+            <SettingsPanel onClose={this.handleSettingsClose} /> :
+            null
+          }
+          { this.state.status ?
+            <StatusPanel type={this.state.status.type} onDismiss={this.handleStatusClose}>{this.state.status.message}</StatusPanel> :
+            null
+          }
         </div>
-        { this.state.showSettings ?
-          <SettingsPanel onClose={this.handleSettingsClose} /> :
-          null
-        }
-        { this.state.status ?
-          <StatusPanel type={this.state.status.type} onDismiss={this.handleStatusClose}>{this.state.status.message}</StatusPanel> :
-          null
-        }
-      </div>
+      </SearchContext.Provider>
     );
   }
 }

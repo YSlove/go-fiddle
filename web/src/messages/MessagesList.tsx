@@ -2,7 +2,16 @@ import './Messages.scss';
 
 import * as React from 'react';
 import { MessageSummary } from '../models/Message';
+import SearchContext from '../search/SearchContext';
+import regex from '../util/regex';
 import MessageRow from './MessageRow';
+
+function expressionFilter(message: MessageSummary, expression: string) {
+  if (!expression) { return true; }
+  const exp = new RegExp(regex.escape`${expression}`, 'i');
+
+  return exp.test(message.uri) || exp.test(message.method) || exp.test(message.statuscode);
+}
 
 interface Props {
   activeMessageId?: string;
@@ -86,29 +95,33 @@ class MessagesList extends React.Component<Props> {
     const { activeMessageId } = this.props;
 
     return (
-      <div ref={(e) => this.containerElement = e} className="MessageList">
-        <table ref={(e) => this.headerElement = e} className="head" cellSpacing="0" cellPadding="0">
-          <thead>
-            <tr>
-              <th className="col-time">Time</th>
-              <th className="col-method">Method</th>
-              <th className="col-uri">Uri</th>
-              <th className="col-status">Status</th>
-            </tr>
-          </thead>
-        </table>
-        <table ref={(e) => this.rowsElement = e} className="body" cellSpacing="0" cellPadding="0" onKeyDown={this.handleKeyDown}>
-          <tbody>
-            {this.props.messages.map(m => (
-              <MessageRow key={m.id}
-                message={m}
-                active={m.id === activeMessageId}
-                onClick={this.handleSelect}
-              />
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <SearchContext.Consumer>
+        {({expression}) => (
+          <div ref={(e) => this.containerElement = e} className="MessageList">
+            <table ref={(e) => this.headerElement = e} className="head" cellSpacing="0" cellPadding="0">
+              <thead>
+                <tr>
+                  <th className="col-time">Time</th>
+                  <th className="col-method">Method</th>
+                  <th className="col-uri">Uri</th>
+                  <th className="col-status">Status</th>
+                </tr>
+              </thead>
+            </table>
+            <table ref={(e) => this.rowsElement = e} className="body" cellSpacing="0" cellPadding="0" onKeyDown={this.handleKeyDown}>
+              <tbody>
+                {this.props.messages.filter(m => expressionFilter(m, expression)).map(m => (
+                  <MessageRow key={m.id}
+                    message={m}
+                    active={m.id === activeMessageId}
+                    onClick={this.handleSelect}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </SearchContext.Consumer>
     );
   }
 }

@@ -31,7 +31,6 @@
 
       &:focus {
         outline: none;
-        background-color: lighten($color: $selectedColor, $amount: 20)
       }
 
       &.active {
@@ -67,6 +66,10 @@
     .col-status {
       text-align: right;
       min-width: 3.2rem;
+    }
+
+    .highlight {
+      background-color: #ff0;
     }
   }
 }

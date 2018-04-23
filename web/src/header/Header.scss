@@ -4,7 +4,7 @@
   width: 100%;
   display: flex;
   position: fixed;
-  background: #000;
+  background: #222;
   color: #fff;
   top: 0;
   height: $headerHeight;
@@ -14,8 +14,32 @@
     margin: 0.8rem 0.5rem;
   }
 
-  .tools {
+  .search {
     flex-grow: 1;
+    text-align: right;
+
+    input {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 2rem;
+      font-size: 1rem;
+      padding: 0.3rem 1rem;
+      margin: 0.4rem;
+      color: #eee;
+
+      &::-moz-placeholder, &::-webkit-input-placeholder, &::-ms-input-placeholder {
+        color: #ddd;
+      }
+
+      &:focus {
+        outline: none;
+        background: rgba(255, 255, 255, 0.15);
+      }
+    }
+  }
+
+  .tools {
+    flex-grow: 0;
     text-align: right;
     margin: 0.8rem 0.5rem;
 
