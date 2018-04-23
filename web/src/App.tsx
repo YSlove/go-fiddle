@@ -32,6 +32,7 @@ class App extends React.Component<any, State> {
     };
 
     this.handleMessageSelect = this.handleMessageSelect.bind(this);
+    this.handleMessageDelete = this.handleMessageDelete.bind(this);
     this.handleData = this.handleData.bind(this);
     this.handleError = this.handleError.bind(this);
     this.handleStatusClose = this.handleStatusClose.bind(this);
@@ -93,6 +94,15 @@ class App extends React.Component<any, State> {
     }
   }
 
+  private handleMessageDelete(message: models.MessageSummary) {
+    const messages = this.state.messages.slice();
+    const index = messages.findIndex(m => m.id === message.id);
+    if (index !== -1) {
+      messages.splice(index, 1);
+    }
+    this.setState({ messages });
+  }
+
   private handleData(e: any) {
     const data = JSON.parse(e.data);
     const messages = this.state.messages.slice();
@@ -123,7 +133,12 @@ class App extends React.Component<any, State> {
         <Header onSelect={this.handleHeader} />
         <div className="container">
           <div className="list-panel">
-            <MessageList messages={this.state.messages} activeMessageId={this.state.selectedMessageId} onSelect={this.handleMessageSelect} />
+            <MessageList
+              messages={this.state.messages}
+              activeMessageId={this.state.selectedMessageId}
+              onSelect={this.handleMessageSelect}
+              onDelete={this.handleMessageDelete}
+            />
           </div>
           <div className="details-panel">
             <MessageDetails message={this.state.selectedMessage} />

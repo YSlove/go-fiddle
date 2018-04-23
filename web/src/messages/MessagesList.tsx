@@ -8,6 +8,7 @@ interface Props {
   activeMessageId?: string;
   messages: MessageSummary[];
   onSelect?: (message: MessageSummary) => void;
+  onDelete?: (message: MessageSummary) => void;
 }
 
 class MessagesList extends React.Component<Props> {
@@ -20,6 +21,13 @@ class MessagesList extends React.Component<Props> {
 
     this.handleSelect = this.handleSelect.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
+  }
+
+  private handleDelete(message: MessageSummary) {
+    if (this.props.onDelete) {
+      this.props.onDelete(message);
+    }
   }
 
   private handleSelect(message: MessageSummary) {
@@ -32,7 +40,16 @@ class MessagesList extends React.Component<Props> {
     const { activeMessageId, messages } = this.props;
 
     if (!messages || !messages.length) { return };
-    if (['ArrowUp', 'ArrowDown', 'Home', 'End', 'PageUp', 'PageDown'].indexOf(e.key) === -1) { return };
+    if (['ArrowUp', 'ArrowDown', 'Home', 'End', 'PageUp', 'PageDown', 'Delete'].indexOf(e.key) === -1) { return };
+
+    const selectedIndex = messages.findIndex(m => m.id === activeMessageId);
+
+    if (e.key === 'Delete') {
+      e.preventDefault();
+      e.stopPropagation();
+      this.handleDelete(messages[selectedIndex]);
+      return;
+    }
 
     const height = this.rowsElement.clientHeight - this.headerElement.clientHeight;
     const rowHeight = height / messages.length;
@@ -40,7 +57,6 @@ class MessagesList extends React.Component<Props> {
 
     console.log('pageSize', pageSize, 'header', this.refs.header, this.headerElement.clientHeight, 'rows', this.refs.rows, this.rowsElement.clientHeight);
 
-    const selectedIndex = messages.findIndex(m => m.id === activeMessageId);
     let newIndex = selectedIndex;
 
     if (e.key === 'ArrowUp') {
