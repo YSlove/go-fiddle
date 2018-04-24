@@ -38,7 +38,6 @@ function expressionFilter(message: MessageSummary, expressionString: string) {
       if (!value) { continue; }
 
       const exp = new RegExp(regex.escapeWildcard`${value}`, 'i');
-      console.log(type, value, exp, expression);
 
       const evaluator = typeEvaluator[type || '*'];
       if (evaluator) {
