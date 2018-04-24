@@ -19,7 +19,7 @@ export function escapeWildcard(strings: TemplateStringsArray, ...values: string[
     components.push(s);
     if (values[i]) {
       let exp = escapeRegExp(values[i]);
-      exp = exp.replace(/\\\*/g, '.*');
+      exp = exp.replace(/\\\*/g, '[^/]+');
       components.push(exp);
     }
   });
