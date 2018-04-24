@@ -7,7 +7,7 @@ import StatusPanel from './common/StatusPanel';
 import config from './config';
 import Header from './header/Header';
 import MessageDetails from './messages/MessageDetails';
-import MessageList from './messages/MessagesList';
+import SearchableMessageList from './messages/SearchableMessagesList';
 import * as models from './models/Message';
 import SearchContext from './search/SearchContext';
 import SettingsPanel from './settings/SettingsPanel';
@@ -142,7 +142,7 @@ class App extends React.Component<any, State> {
           <Header search={this.state.search} onSelect={this.handleHeader} onSearch={this.handleSearch} />
           <div className="container">
             <div className="list-panel">
-              <MessageList
+              <SearchableMessageList
                 messages={this.state.messages}
                 activeMessageId={this.state.selectedMessageId}
                 onSelect={this.handleMessageSelect}

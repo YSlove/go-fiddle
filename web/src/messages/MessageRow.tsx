@@ -38,17 +38,19 @@ class MessagesRow extends React.Component<Props> {
     }
   }
 
-  // public componentDidMount() {
-  //   if (this.props.active) {
-  //     this.rowElement.focus();
-  //   }
-  // }
+  private scrollIntoView() {
+    if (this.props.active && this.rowElement && this.rowElement.scrollIntoView) {
+      this.rowElement.scrollIntoView(false);
+    }
+  }
 
-  // public componentDidUpdate() {
-  //   if (this.props.active) {
-  //     this.rowElement.focus();
-  //   }
-  // }
+  public componentDidMount() {
+    this.scrollIntoView();
+  }
+
+  public componentDidUpdate() {
+    this.scrollIntoView();
+  }
 
   public render() {
     const { message, active } = this.props;
