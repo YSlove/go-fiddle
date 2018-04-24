@@ -10,7 +10,7 @@ function getHighlights(text: string, expression: string) {
   let i = 0;
   if (!expression) { return <span key={++i}>{text}</span>; }
 
-  const matchExpression = new RegExp(regex.escape`${expression}`, 'gi');
+  const matchExpression = new RegExp(regex.escapeWildcard`${expression}`, 'gi');
 
   const components: JSX.Element[] = [];
   let currentIndex = 0;

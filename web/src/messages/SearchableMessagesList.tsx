@@ -6,7 +6,8 @@ import MessagesList, { Props as MessagesListProps} from './MessagesList';
 
 function expressionFilter(message: MessageSummary, expression: string) {
   if (!expression) { return true; }
-  const exp = new RegExp(regex.escape`${expression}`, 'i');
+
+  const exp = new RegExp(regex.escapeWildcard`${expression}`, 'i');
 
   return exp.test(message.uri) || exp.test(message.method) || exp.test(message.statuscode);
 }
