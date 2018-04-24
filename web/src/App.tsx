@@ -1,6 +1,6 @@
 import './App.scss';
 
-import * as fetch from 'isomorphic-fetch';
+import fetch from 'isomorphic-fetch';
 import * as React from 'react';
 import Sockette from 'sockette';
 import StatusPanel from './common/StatusPanel';
@@ -25,6 +25,8 @@ interface State {
 }
 
 class App extends React.Component<any, State> {
+  private fetch: (...args: any[]) => Promise<any>;
+
   constructor(props: any) {
     super(props);
 
@@ -33,6 +35,8 @@ class App extends React.Component<any, State> {
       search: '',
       showSettings: false,
     };
+
+    this.fetch = props.fetch || fetch;
 
     this.handleMessageSelect = this.handleMessageSelect.bind(this);
     this.handleMessageDelete = this.handleMessageDelete.bind(this);
@@ -58,7 +62,7 @@ class App extends React.Component<any, State> {
   }
 
   private async refreshData() {
-    const response = await fetch(`${config.restApi}messages`);
+    const response = await this.fetch(`${config.restApi}messages`);
     const messages = await response.json();
 
     this.setState({messages});
@@ -91,7 +95,7 @@ class App extends React.Component<any, State> {
     });
 
     try {
-      const response = await fetch(`${config.restApi}messages/${message.id}`);
+      const response = await this.fetch(`${config.restApi}messages/${message.id}`);
       const messageDetails = await response.json();
 
       this.setState({

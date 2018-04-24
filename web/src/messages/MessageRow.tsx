@@ -6,6 +6,31 @@ import { MessageSummary } from '../models/Message';
 import HighlightableText from '../search/HighlightableText';
 import SearchContext from '../search/SearchContext';
 
+function getExpressionByType(expressionString: string, ...expressionTypes: string[]) {
+  const filteredExpressions: string[] = [];
+  const expressions = expressionString.split(' ').filter(s => s);
+  for (const expression of expressions) {
+    const match = /^(([^:]*):)?(.*)/.exec(expression);
+
+    if (match) {
+      let [ , , type, value ] = match;
+
+      // ignore
+      if (/^https?:/i.test(expression)) {
+        type = '';
+        value = expression;
+      }
+
+      for (const expressionType of expressionTypes) {
+        if ((!type || type === expressionType) && value) {
+          filteredExpressions.push(value);
+        }
+      }
+    }
+  }
+  return filteredExpressions;
+}
+
 interface Props {
   active: boolean;
   message: MessageSummary;
@@ -61,9 +86,9 @@ class MessagesRow extends React.Component<Props> {
         {({expression}) => (
           <tr ref={(e) => this.rowElement = e} tabIndex={0} className={active ? 'active' : ''} onClick={this.handleClick} onKeyDown={this.handleKeyDown}>
             <td className="col-time">{moment(timestamp / 1000000).format('HH:mm:ss')}</td>
-            <td className="col-method"><HighlightableText text={method} expression={expression} /></td>
-            <td className="col-uri" title={uri}><HighlightableText text={uri} expression={expression} /></td>
-            <td className="col-status"><HighlightableText text={(statuscode || '-').toString()} expression={expression} /></td>
+            <td className="col-method"><HighlightableText text={method} expressions={getExpressionByType(expression, 'method')} /></td>
+            <td className="col-uri" title={uri}><HighlightableText text={uri} expressions={getExpressionByType(expression, 'uri', 'host')} /></td>
+            <td className="col-status"><HighlightableText text={(statuscode || '-').toString()} expressions={getExpressionByType(expression, 'status')} /></td>
           </tr>
         )}
       </SearchContext.Consumer>

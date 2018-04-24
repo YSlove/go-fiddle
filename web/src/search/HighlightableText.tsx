@@ -1,42 +1,53 @@
 import * as React from 'react';
+import * as range from '../util/range';
 import regex from '../util/regex';
 
 interface Props {
   text: string;
-  expression: string;
+  expressions: string[];
 }
 
-function getHighlights(text: string, expression: string) {
+function getHighlights(text: string, expressions: string[]) {
   let i = 0;
-  if (!expression) { return <span key={++i}>{text}</span>; }
+  if (!expressions.length) { return <span key={++i}>{text}</span>; }
 
-  const matchExpression = new RegExp(regex.escapeWildcard`${expression}`, 'gi');
+  let matches: range.Range[] = [];
+  for (const expression of expressions) {
+    const matchExpression = new RegExp(regex.escapeWildcard`${expression}`, 'gi');
 
-  const components: JSX.Element[] = [];
-  let currentIndex = 0;
-
-  while (true) {
-    const match = matchExpression.exec(text);
-    if (!match) {
-      if (currentIndex !== text.length) {
-        components.push(<span key={++i}>{text.substring(currentIndex, text.length)}</span>);
+    while (true) {
+      const match = matchExpression.exec(text);
+      if (match) {
+        matches.push({ start: match.index, end: match.index + match[0].length});
+      } else {
+        break;
       }
-      break;
     }
-
-    components.push(<span key={++i}>{text.substring(currentIndex, match.index)}</span>);
-    components.push(<span key={++i} className="highlight">{match[0]}</span>);
-    currentIndex = match.index + match[0].length;
   }
 
-  return components;
+  matches = range.mergeRanges(matches);
+
+  const elements: JSX.Element[] = [];
+
+  let currentIndex = 0;
+  for (const match of matches) {
+    elements.push(<span key={++i}>{text.substring(currentIndex, match.start)}</span>);
+    elements.push(<span key={++i} className="highlight">{text.substring(match.start, match.end)}</span>);
+    currentIndex = match.end;
+  }
+
+  if (currentIndex < text.length) {
+    elements.push(<span key={++i}>{text.substring(currentIndex, text.length)}</span>);
+  }
+
+  return elements;
 }
 
 class HighlightableText extends React.Component<Props> {
   public render() {
-    const { text, expression } = this.props;
+    const { text, expressions } = this.props;
 
-    const highlights = getHighlights(text, expression);
+    const highlights = getHighlights(text, expressions);
 
     return (
       <span>{highlights}</span>

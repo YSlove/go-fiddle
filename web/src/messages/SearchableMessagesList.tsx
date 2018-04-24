@@ -4,12 +4,52 @@ import SearchContext from '../search/SearchContext';
 import regex from '../util/regex';
 import MessagesList, { Props as MessagesListProps} from './MessagesList';
 
-function expressionFilter(message: MessageSummary, expression: string) {
-  if (!expression) { return true; }
+const typeEvaluator = {
+  '*': (message: MessageSummary) => `${message.method} ${message.uri} ${(message.statuscode || '').toString()}`,
+  'host': (message: MessageSummary) => {
+    const match = /https?:\/\/([^/]+)/i.exec(message.uri);
+    if (match) {
+      return match[1];
+    }
+    return '';
+  },
+  'method': (message: MessageSummary) => message.method,
+  'status': (message: MessageSummary) => (message.statuscode || '').toString(),
+  'uri': (message: MessageSummary) => message.uri,
+};
 
-  const exp = new RegExp(regex.escapeWildcard`${expression}`, 'i');
+function expressionFilter(message: MessageSummary, expressionString: string) {
+  if (!expressionString) { return true; }
+  const expressions = expressionString.split(' ').filter(s => s);
 
-  return exp.test(message.uri) || exp.test(message.method) || exp.test(message.statuscode);
+  let isMatch = true;
+  for (const expression of expressions) {
+    const match = /^(([^:]*):)?(.*)/.exec(expression);
+
+    if (match) {
+      let [ , , type, value ] = match;
+
+      // ignore
+      if (/^https?:/i.test(expression)) {
+        type = '';
+        value = expression;
+      }
+
+      if (!value) { continue; }
+
+      const exp = new RegExp(regex.escapeWildcard`${value}`, 'i');
+      console.log(type, value, exp, expression);
+
+      const evaluator = typeEvaluator[type || '*'];
+      if (evaluator) {
+        if (!exp.test(evaluator(message))) {
+          isMatch = false;
+          break;
+        }
+      }
+    }
+  }
+  return isMatch;
 }
 
 class SearchableMessagesList extends React.Component<MessagesListProps> {
