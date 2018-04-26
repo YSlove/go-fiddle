@@ -31,6 +31,27 @@ function getExpressionByType(expressionString: string, ...expressionTypes: strin
   return filteredExpressions;
 }
 
+function getParent(element: HTMLElement, selector?: string): HTMLElement | null {
+  const parent = element.parentElement;
+
+  if (selector && parent) {
+    let matches = false;
+    if (parent.matches) {
+      matches = parent.matches(selector);
+    } else if (parent.msMatchesSelector) {
+      matches = parent.msMatchesSelector(selector);
+    }
+
+    if (matches) {
+      return parent;
+    } else {
+      return getParent(parent, selector);
+    }
+  }
+
+  return parent;
+}
+
 interface Props {
   active: boolean;
   message: MessageSummary;
@@ -65,7 +86,15 @@ class MessagesRow extends React.Component<Props> {
 
   private scrollIntoView() {
     if (this.props.active && this.rowElement && this.rowElement.scrollIntoView) {
-      this.rowElement.scrollIntoView(false);
+      const elem: HTMLElement = this.rowElement;
+      const parent = getParent(elem, 'div.list-panel');
+      if (parent) {
+        if (elem.offsetTop > parent.scrollTop + parent.clientHeight) {
+          elem.scrollIntoView(false);
+        } else if (elem.offsetTop < parent.scrollTop) {
+          parent.scrollTo(0, elem.offsetTop);
+        }
+      }
     }
   }
 
