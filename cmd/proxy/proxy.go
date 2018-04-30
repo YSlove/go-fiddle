@@ -25,7 +25,6 @@ func main() {
 	caConfigured := configureCA()
 	proxy := goproxy.NewProxyHttpServer()
 	kafkaProducer := kafkaserver.NewProducer()
-	requestMap := make(map[*http.Request]string)
 
 	session := database.GetDatabaseConnection()
 	defer session.Close()
@@ -46,7 +45,10 @@ func main() {
 			httpMessage := HTTPMessage{}
 			request, _ := httputil.DumpRequest(r, false)
 			requestID, _ := uuid.NewV4()
+			messageID := fmt.Sprintf("%x", requestID.Bytes())
 			timestamp := time.Now().UnixNano()
+
+			ctx.UserData = map[string]string{"requestID": messageID}
 
 			httpRequest := unmarshalHTTPRequest(request)
 			httpRequest.Timestamp = timestamp
@@ -65,8 +67,7 @@ func main() {
 
 			httpRequest.ClientIP = clientIP
 
-			httpMessage.ID = fmt.Sprintf("%x", requestID.Bytes())
-			requestMap[r] = httpMessage.ID
+			httpMessage.ID = messageID
 			httpMessage.Request = httpRequest
 
 			go func() {
@@ -100,7 +101,13 @@ func main() {
 			timestamp := time.Now().UnixNano()
 			topic := "response"
 
-			requestID := requestMap[r.Request]
+			userData, ok := ctx.UserData.(map[string]string)
+			if !ok {
+				log.Print("Error reading user data")
+				return r
+			}
+
+			requestID := userData["requestID"]
 			err := collection.FindId(requestID).One(&httpMessage)
 
 			if err != nil {
@@ -112,8 +119,6 @@ func main() {
 			response.Timestamp = timestamp
 			httpMessage.Response = response
 			httpMessage.Response.Body = buf
-
-			delete(requestMap, r.Request)
 
 			go func() {
 				err := collection.Update(bson.M{"_id": requestID}, httpMessage)
